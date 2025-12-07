@@ -1,0 +1,33 @@
+/* === EMOJI PICKER CONTAINER === */
+.emoji-picker {
+  display: grid; /* Use grid for better WhatsApp-like layout */
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 6px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  position: absolute;
+  bottom: 50px; /* aligns above the input */
+  left: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 100;
+  width: 220px;
+  max-width: 90%;
+}
+
+/* === INDIVIDUAL EMOJI BUTTON === */
+.emoji-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px;
+  transition: transform 0.1s ease-in-out, background 0.1s ease-in-out;
+  border-radius: 6px;
+}
+
+.emoji-btn:hover {
+  background: #e0e0e0;
+  transform: scale(1.2);
+}

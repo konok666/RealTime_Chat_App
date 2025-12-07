@@ -1,0 +1,85 @@
+/* Chat input wrapper */
+.chat-input {
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 12px;
+  border-top: 1px solid #ddd;
+  gap: 8px;
+  background-color: #f9f9f9;
+}
+
+.left-controls,
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.message-input {
+  flex: 1;
+  resize: none;
+  padding: 10px 14px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 15px;
+  line-height: 18px;
+  max-height: 120px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.send-btn,
+.mic-btn,
+.emoji-btn,
+.attach-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.send-btn:hover,
+.mic-btn:hover,
+.emoji-btn:hover,
+.attach-btn:hover {
+  color: #000;
+}
+
+/* Attach Panel */
+.attach-panel {
+  position: absolute;
+  bottom: 60px; /* above chat input */
+  left: 12px;
+  width: 260px;
+  max-width: 90%;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.2s ease-out;
+}
+
+/* Open/Close states */
+.attach-panel-open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.attach-panel-close {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Optional: shadow and rounded edges for Attach panel */
+.attach-panel > .attach-page {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

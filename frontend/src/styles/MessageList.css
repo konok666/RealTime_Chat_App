@@ -1,0 +1,56 @@
+/* Chat container */
+.message-list {
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Empty message placeholder */
+.empty-msg {
+  text-align: center;
+  color: #888;
+  margin-top: 20px;
+}
+
+/* Message container for each message */
+.message-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Align messages */
+.message-container.me {
+  align-items: flex-end; /* your messages on right */
+}
+
+.message-container.other {
+  align-items: flex-start; /* others messages on left */
+}
+
+/* Action buttons (pin, edit, delete) */
+.message-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.message-container.me .message-actions {
+  justify-content: flex-end;
+}
+
+.message-container.other .message-actions {
+  justify-content: flex-start;
+}
+
+.message-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}

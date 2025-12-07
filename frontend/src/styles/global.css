@@ -1,0 +1,19 @@
+:root {
+  --bg: #f6f8fb;
+  --card: #fff;
+  --accent: #4f46e5;
+  --muted: #6b7280;
+  --glass: rgba(255,255,255,0.7);
+  --dark-bg: #0b1220;
+  --dark-card: #0f1724;
+}
+html,body,#root { height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg); }
+[data-theme="dark"] {
+  --bg: #071022;
+  --card: #0b1220;
+  --accent: #7c3aed;
+  color: #e6eef8;
+}
+.chat-root { height:100vh; display:flex; flex-direction:column; }
+.chat-frame { display:flex; flex:1; gap:12px; padding:12px; }
+.chat-area { flex:1; display:flex; flex-direction:column; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); border-radius:12px; box-shadow:0 6px 18px rgba(14,14,16,0.08); overflow:hidden; }

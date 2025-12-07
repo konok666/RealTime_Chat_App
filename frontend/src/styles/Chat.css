@@ -1,0 +1,147 @@
+/* === THEME VARIABLES === */
+:root {
+  --bg-light: #f5f5f5;
+  --bg-dark: #1e1e1e;
+  --text-light: #111;
+  --text-dark: #f5f5f5;
+  --primary: #4caf50;
+  --secondary: #2c3e50;
+  --accent: #ff9800;
+  --border: #ccc;
+}
+
+[data-theme="light"] {
+  --bg: var(--bg-light);
+  --text: var(--text-light);
+}
+
+[data-theme="dark"] {
+  --bg: var(--bg-dark);
+  --text: var(--text-dark);
+}
+
+/* === CHAT ROOT === */
+.chat-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  color: var(--text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* === CHAT FRAME === */
+.chat-frame {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* === CHAT AREA === */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: var(--bg);
+  overflow-y: auto;
+  position: relative;
+}
+
+/* === MESSAGE LIST === */
+.message-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  max-width: 70%;
+  position: relative;
+}
+
+.message.me {
+  background: var(--primary);
+  color: #fff;
+  align-self: flex-end;
+}
+
+.message:not(.me) {
+  background: rgba(0,0,0,0.05);
+  color: var(--text);
+  align-self: flex-start;
+}
+
+/* === TYPING ROW === */
+.typing-row {
+  font-style: italic;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* === CHAT INPUT === */
+.chat-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.chat-input button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+}
+
+/* === SETTINGS PANEL === */
+.settings-panel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--secondary);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-panel input {
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+
+/* === SCROLLBAR === */
+.chat-area::-webkit-scrollbar,
+.message-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-area::-webkit-scrollbar-thumb,
+.message-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.chat-area::-webkit-scrollbar-track,
+.message-list::-webkit-scrollbar-track {
+  background: transparent;
+}

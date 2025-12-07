@@ -1,0 +1,52 @@
+/* Wallpaper Settings Row */
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.setting-row label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* Input field */
+.setting-row input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.setting-row input:focus {
+  border-color: #6a5acd;
+  box-shadow: 0 0 4px rgba(106, 90, 205, 0.4);
+}
+
+/* Apply Button */
+.apply-wallpaper-btn {
+  margin-top: 10px;
+  width: 120px;
+  padding: 10px 0;
+  background-color: #6a5acd;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.apply-wallpaper-btn:hover {
+  background-color: #5848c2;
+  transform: scale(1.03);
+}
+
+.apply-wallpaper-btn:disabled {
+  background-color: #b8aef2;
+  cursor: not-allowed;
+}

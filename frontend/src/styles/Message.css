@@ -1,0 +1,164 @@
+/* ===========================
+   MESSAGE ROW
+=========================== */
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.message-row.me {
+  justify-content: flex-end;
+}
+
+.message-row.other {
+  justify-content: flex-start;
+}
+
+/* ===========================
+   BUBBLE
+=========================== */
+.message-bubble {
+  max-width: 65%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.me .message-bubble {
+  background: #dcf8c6;   /* WhatsApp green */
+}
+
+.other .message-bubble {
+  background: #ffffff;
+}
+
+/* ===========================
+   WHATSAPP BUBBLE TAIL
+=========================== */
+.me .message-bubble::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #dcf8c6;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.other .message-bubble::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #ffffff;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+/* ===========================
+   META TEXT
+=========================== */
+.message-meta {
+  font-size: 12px;
+  opacity: 0.6;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.message-text {
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+/* ===========================
+   PRIVATE TAG
+=========================== */
+.private-tag {
+  margin-top: 4px;
+  background: #ffdddd;
+  color: #e60000;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  display: inline-block;
+}
+
+/* ===========================
+   EXISTING REACTIONS
+=========================== */
+.reactions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reaction {
+  background: rgba(0,0,0,0.06);
+  padding: 2px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.15s;
+}
+
+.reaction:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+/* ===========================
+   EMOJI TRIGGER BUTTON
+=========================== */
+.emoji-trigger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  padding: 4px;
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.emoji-trigger:hover {
+  opacity: 1;
+}
+
+/* ===========================
+   REACTIONS BAR POPUP
+=========================== */
+.reactions-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: white;
+  border-radius: 20px;
+  position: absolute;
+  bottom: -45px;
+  left: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-out;
+  z-index: 10;
+}
+
+.reaction-btn {
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
