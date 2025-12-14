@@ -1,52 +1,77 @@
-/* === CHAT HEADER === */
+/* === CHAT HEADER (Premium) === */
 .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background: var(--header-bg, #ffffff);
-  border-bottom: 1px solid var(--border, #ddd);
+  padding: 0.75rem 1.2rem;
+
+  /* Modern gradient header */
+  background: linear-gradient(135deg, #4a90e2, #0072ff);
+  
+  border-bottom: 1px solid rgba(255,255,255,0.15);
   position: relative;
   z-index: 10;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 /* LEFT SECTION */
 .chat-header .left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.7rem;
 }
 
 .chat-header .logo {
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: var(--primary-color, #333);
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .chat-header .search-mini {
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  color: #fff;
+  opacity: 0.9;
+  transition: 0.2s;
 }
 
-/* CENTER SECTION */
+.chat-header .search-mini:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* CENTER */
 .chat-header .center .title {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-color, #555);
+  color: #e8f1ff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
 /* RIGHT SECTION */
 .chat-header .right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .chat-header .theme-btn {
-  background: transparent;
+  background: rgba(255,255,255,0.2);
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: white;
+  transition: 0.25s;
+}
+
+.chat-header .theme-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translateY(-2px);
 }
 
 /* PROFILE MENU */
@@ -55,63 +80,99 @@
 }
 
 .profile-menu .avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   cursor: pointer;
   object-fit: cover;
-  border: 2px solid var(--border, #ddd);
+  border: 2px solid rgba(255,255,255,0.6);
+  transition: 0.25s ease;
 }
 
+.profile-menu .avatar:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+
+/* === POPUP (Glassy Modern Card) === */
 .profile-popup {
   position: absolute;
-  top: 45px;
+  top: 48px;
   right: 0;
-  width: 220px;
-  background: var(--popup-bg, #fff);
-  border: 1px solid var(--border, #ccc);
-  border-radius: 10px;
-  padding: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 240px;
+
+  /* Glassmorphism */
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 12px;
+  padding: 0.8rem;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   z-index: 20;
+
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.6rem;
+
+  animation: fadeSlide 0.2s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-popup label {
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;
-  color: var(--text-color, #333);
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .profile-popup input {
-  margin-top: 0.2rem;
-  padding: 0.3rem 0.4rem;
-  border: 1px solid var(--border, #ccc);
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  outline: none;
+
+  background: rgba(255,255,255,0.75);
   border-radius: 6px;
   font-size: 0.85rem;
+  color: #333;
 }
 
 .profile-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.3rem;
+  gap: 0.4rem;
   margin-top: 0.3rem;
 }
 
 .profile-actions button {
-  padding: 0.3rem 0.5rem;
+  padding: 0.35rem 0.7rem;
   font-size: 0.8rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  background: var(--primary-color, #007bff);
-  color: #fff;
-  transition: background 0.2s;
+
+  background: linear-gradient(135deg, #4a90e2, #0066dd);
+  color: white;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: 0.25s;
 }
 
 .profile-actions button:hover {
-  background: var(--primary-hover, #0056b3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }

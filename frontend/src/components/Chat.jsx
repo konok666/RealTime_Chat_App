@@ -15,18 +15,16 @@ export default function Chat() {
   const [username, setUsername] = useState(
     () => localStorage.getItem("chat_username") || `User${Math.floor(Math.random() * 1000)}`
   );
-
   const [avatar, setAvatar] = useState(
     () => localStorage.getItem("chat_avatar") || ""
   );
 
-  const [client, setClient] = useState(null);
   const clientRef = useRef(null);
 
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [rooms, setRooms] = useState(["General", "Random"]);
   const [currentRoom, setCurrentRoom] = useState(
-    localStorage.getItem("chat_current_room") || "General"
+    () => localStorage.getItem("chat_current_room") || "General"
   );
 
   const [messagesMap, setMessagesMap] = useState(() => {
@@ -47,32 +45,147 @@ export default function Chat() {
     () => localStorage.getItem("chat_wallpaper") || ""
   );
 
-  // --- Startup ---
+  // ------------------- Functions -------------------
+  const joinRoom = (room) => {
+    setCurrentRoom(room);
+    clientRef.current?.emitLocal("join_room", {
+      room,
+      fromClient: clientRef.current.id,
+    });
+  };
+
+  const openPrivateChat = (user) => {
+    const privateId = `${username}_private_${user}`;
+    setCurrentRoom(privateId);
+
+    clientRef.current?.emitLocal("join_room", {
+      room: privateId,
+      fromClient: clientRef.current.id,
+    });
+  };
+
+  const sendMessage = ({ text, type = "text", audioBlob, file }) => {
+    if (!clientRef.current) return;
+
+    const payload = {
+      id: `${Date.now()}_${Math.random()}`,
+      from: username || "Guest",
+      time: Date.now(),
+      type,
+    };
+
+    if (type === "audio") payload.audioBlob = audioBlob;
+    else if (type === "file") payload.file = file;
+    else payload.text = text;
+
+    // Instant local update
+    setMessagesMap((prev) => {
+      const copy = { ...prev };
+      if (currentRoom.includes("_private_")) {
+        copy[currentRoom] = [...(copy[currentRoom] || []), { ...payload, roomId: currentRoom }];
+      } else {
+        copy[currentRoom] = [...(copy[currentRoom] || []), { ...payload, room: currentRoom }];
+      }
+      saveChats("chat_messages", copy);
+      return copy;
+    });
+
+    // Emit to server
+    if (currentRoom.includes("_private_")) {
+      payload.roomId = currentRoom;
+      clientRef.current.emitLocal("private_message", { ...payload, fromClient: clientRef.current.id });
+    } else {
+      payload.room = currentRoom;
+      clientRef.current.emitLocal("room_message", { ...payload, fromClient: clientRef.current.id });
+    }
+  };
+
+  const emitTyping = () => {
+    clientRef.current?.emitLocal("typing", {
+      roomId: currentRoom,
+      username: username || "Guest",
+    });
+  };
+
+  // Edit / Delete / Pin / React handlers (update local state immediately and emit)
+  const editMessage = (msgId, newText) => {
+    setMessagesMap(prev => {
+      const copy = { ...prev };
+      for (const room in copy) {
+        copy[room] = copy[room].map(m => m.id === msgId ? { ...m, text: newText, edited: true } : m);
+      }
+      saveChats("chat_messages", copy);
+      return copy;
+    });
+    clientRef.current?.emitLocal("edit_message", { messageId: msgId, newText, from: username });
+  };
+
+  const deleteMessage = (msgId) => {
+    setMessagesMap(prev => {
+      const copy = { ...prev };
+      for (const room in copy) {
+        copy[room] = copy[room].filter(m => m.id !== msgId);
+      }
+      saveChats("chat_messages", copy);
+      return copy;
+    });
+    clientRef.current?.emitLocal("delete_message", { messageId: msgId, from: username });
+  };
+
+  const pinMessage = (msg) => {
+    setPinnedMessages(prev => {
+      const next = [msg, ...prev.filter(p => p.id !== msg.id)].slice(0, 20);
+      saveChats("pinned_messages", next);
+      return next;
+    });
+    clientRef.current?.emitLocal("pin_message", msg);
+  };
+
+  const reactToMessage = (messageId, emoji) => {
+    // Update local reactions map
+    setMessagesMap(prev => {
+      const copy = { ...prev };
+      for (const r in copy) {
+        copy[r] = copy[r].map(m => {
+          if (m.id === messageId) {
+            const reactions = { ...(m.reactions || {}) };
+            reactions[emoji] = reactions[emoji] || [];
+            if (!reactions[emoji].includes(username)) reactions[emoji].push(username);
+            return { ...m, reactions };
+          }
+          return m;
+        });
+      }
+      saveChats("chat_messages", copy);
+      return copy;
+    });
+
+    clientRef.current?.emitLocal("reaction", { messageId, emoji, from: username });
+  };
+
+  // ------------------- Startup -------------------
   useEffect(() => {
     if (!serverStarted) {
       startFakeServer();
       serverStarted = true;
     }
 
-    const c = createFakeServerClient({ username, avatar });
-    clientRef.current = c;
-    setClient(c);
+    const client = createFakeServerClient({ username, avatar });
+    clientRef.current = client;
 
-    c.on("server__online_users", setOnlineUsers);
+    client.on("server__online_users", setOnlineUsers);
 
-    c.on("server__state", (payload) => {
-      if (payload.rooms)
-        setRooms((prev) => Array.from(new Set([...prev, ...payload.rooms])));
-      if (payload.messages)
-        setMessagesMap((prev) => ({ ...prev, ...payload.messages }));
+    client.on("server__state", (payload) => {
+      if (payload.rooms) setRooms(prev => Array.from(new Set([...prev, ...payload.rooms])));
+      if (payload.messages) setMessagesMap(prev => ({ ...prev, ...payload.messages }));
     });
 
-    c.on("joined_room", ({ room }) => {
-      setMessagesMap((prev) => ({ ...prev, [room]: prev[room] || [] }));
+    client.on("joined_room", ({ room }) => {
+      setMessagesMap(prev => ({ ...prev, [room]: prev[room] || [] }));
     });
 
-    c.on("room_message", (msg) => {
-      setMessagesMap((prev) => {
+    client.on("room_message", (msg) => {
+      setMessagesMap(prev => {
         const copy = { ...prev };
         copy[msg.room] = [...(copy[msg.room] || []), msg];
         saveChats("chat_messages", copy);
@@ -80,8 +193,8 @@ export default function Chat() {
       });
     });
 
-    c.on("private_message", (msg) => {
-      setMessagesMap((prev) => {
+    client.on("private_message", (msg) => {
+      setMessagesMap(prev => {
         const copy = { ...prev };
         copy[msg.roomId] = [...(copy[msg.roomId] || []), msg];
         saveChats("chat_messages", copy);
@@ -89,10 +202,10 @@ export default function Chat() {
       });
     });
 
-    c.on("typing", ({ roomId, username }) => {
-      setTypingMap((prev) => ({ ...prev, [roomId]: username }));
+    client.on("typing", ({ roomId, username }) => {
+      setTypingMap(prev => ({ ...prev, [roomId]: username }));
       setTimeout(() => {
-        setTypingMap((prev) => {
+        setTypingMap(prev => {
           const cp = { ...prev };
           delete cp[roomId];
           return cp;
@@ -100,17 +213,17 @@ export default function Chat() {
       }, 1500);
     });
 
-    c.on("reaction", (payload) => {
-      setMessagesMap((prev) => {
+    client.on("reaction", ({ messageId, emoji, from }) => {
+      // merge reactions from server to local
+      setMessagesMap(prev => {
         const copy = { ...prev };
-        for (const roomId in copy) {
-          copy[roomId] = copy[roomId].map((m) => {
-            if (m.id === payload.messageId) {
-              m.reactions = m.reactions || {};
-              m.reactions[payload.emoji] = m.reactions[payload.emoji] || [];
-              if (!m.reactions[payload.emoji].includes(payload.from)) {
-                m.reactions[payload.emoji].push(payload.from);
-              }
+        for (const r in copy) {
+          copy[r] = copy[r].map(m => {
+            if (m.id === messageId) {
+              const reactions = { ...(m.reactions || {}) };
+              reactions[emoji] = reactions[emoji] || [];
+              if (!reactions[emoji].includes(from)) reactions[emoji].push(from);
+              return { ...m, reactions };
             }
             return m;
           });
@@ -120,136 +233,49 @@ export default function Chat() {
       });
     });
 
-    c.on("edit_message", ({ messageId, newText }) => {
-      setMessagesMap((prev) => {
+    client.on("edit_message", ({ messageId, newText }) => {
+      setMessagesMap(prev => {
         const copy = { ...prev };
         for (const r in copy) {
-          copy[r] = copy[r].map((m) =>
-            m.id === messageId ? { ...m, text: newText, edited: true } : m
-          );
+          copy[r] = copy[r].map(m => m.id === messageId ? { ...m, text: newText, edited: true } : m);
         }
         saveChats("chat_messages", copy);
         return copy;
       });
     });
 
-    c.on("delete_message", ({ messageId }) => {
-      setMessagesMap((prev) => {
+    client.on("delete_message", ({ messageId }) => {
+      setMessagesMap(prev => {
         const copy = { ...prev };
         for (const r in copy) {
-          copy[r] = copy[r].filter((m) => m.id !== messageId);
+          copy[r] = copy[r].filter(m => m.id !== messageId);
         }
         saveChats("chat_messages", copy);
         return copy;
       });
     });
 
-    c.on("pin_message", (msg) => {
-      setPinnedMessages((prev) => {
-        const next = [msg, ...prev.filter((p) => p.id !== msg.id)].slice(0, 20);
+    client.on("pin_message", (msg) => {
+      setPinnedMessages(prev => {
+        const next = [msg, ...prev.filter(p => p.id !== msg.id)].slice(0, 20);
         saveChats("pinned_messages", next);
         return next;
       });
     });
 
-    c.emitLocal("server__request_state", {});
-    c.emitLocal("join_room", { room: currentRoom, fromClient: c.id });
+    client.emitLocal("server__request_state", {});
+    client.emitLocal("join_room", { room: currentRoom, fromClient: client.id });
 
     localStorage.setItem("chat_username", username);
 
-    return () => c.disconnect();
-  }, [username, avatar, currentRoom]);
+    return () => client.disconnect();
+  }, [username, avatar]);
 
-  // Persist theme
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("chat_theme", theme);
-  }, [theme]);
-
-  // Persist wallpaper
-  useEffect(() => {
-    if (wallpaper) {
-      localStorage.setItem("chat_wallpaper", wallpaper);
-    } else {
-      localStorage.removeItem("chat_wallpaper");
-    }
-  }, [wallpaper]);
-
-  useEffect(() => {
-    localStorage.setItem("chat_current_room", currentRoom);
-  }, [currentRoom]);
-
-  // Actions
-  const joinRoom = (room) => {
-    if (!clientRef.current) return;
-    clientRef.current.emitLocal("join_room", {
-      room,
-      fromClient: clientRef.current.id,
-    });
-    setCurrentRoom(room);
-  };
-
-  const openPrivateChat = (user) => {
-    if (!clientRef.current) return;
-    const myId = clientRef.current.id;
-    const otherId = user.id;
-    const roomId = [myId, otherId].sort().join("_private_");
-
-    clientRef.current.emitLocal("join_private", {
-      roomId,
-      to: otherId,
-      fromClient: myId,
-    });
-
-    setMessagesMap((prev) => ({ ...prev, [roomId]: prev[roomId] || [] }));
-    setCurrentRoom(roomId);
-  };
-
-  const sendMessage = ({ text, type = "text" }) => {
-    if (!clientRef.current) return;
-
-    const payload = {
-      id: `${Date.now()}_${Math.random()}`,
-      from: username || "Guest",
-      text,
-      time: Date.now(),
-      type,
-    };
-
-    if (currentRoom.includes("_private_")) {
-      payload.roomId = currentRoom;
-      clientRef.current.emitLocal("private_message", {
-        ...payload,
-        fromClient: clientRef.current.id,
-      });
-    } else {
-      payload.room = currentRoom;
-      clientRef.current.emitLocal("room_message", {
-        ...payload,
-        fromClient: clientRef.current.id,
-      });
-    }
-  };
-
-  const emitTyping = () => {
-    if (!clientRef.current) return;
-    clientRef.current.emitLocal("typing", {
-      roomId: currentRoom,
-      username: username || "Guest",
-    });
-  };
-
-  // UI
   const safeUsername = username || "Guest";
   const safeAvatar = avatar || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(safeUsername)}`;
 
   return (
-    <div
-      className="chat-root"
-      style={{
-        backgroundImage: wallpaper ? `url(${wallpaper})` : "none",
-      }}
-    >
+    <div className={`chat-root ${theme}`} style={{ backgroundImage: wallpaper ? `url(${wallpaper})` : "none" }}>
       <Header
         username={safeUsername}
         avatar={safeAvatar}
@@ -276,13 +302,25 @@ export default function Chat() {
         />
 
         <div className="chat-area">
-          <MessageList messages={messagesMap[currentRoom] || []} me={safeUsername} />
+          <MessageList
+            messages={messagesMap[currentRoom] || []}
+            me={safeUsername}
+            onReact={reactToMessage}
+            onEdit={editMessage}
+            onDelete={deleteMessage}
+            onPin={pinMessage}
+          />
 
           <div className="typing-row">
             {typingMap[currentRoom] && <em>{typingMap[currentRoom]} is typing…</em>}
           </div>
 
-          <ChatInput sendMessage={sendMessage} emitTyping={emitTyping} />
+          <ChatInput
+            onSend={(msg) => sendMessage({ text: msg, type: "text" })}
+            onSendAudio={(blob) => sendMessage({ audioBlob: blob, type: "audio" })}
+            onAttach={(file) => sendMessage({ file, type: "file" })}
+            emitTyping={emitTyping}
+          />
         </div>
       </div>
     </div>

@@ -145,3 +145,26 @@
 .message-list::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* LIGHT THEME */
+.chat-root.light {
+  background-color: #ffffff;
+  color: #000;
+}
+
+/* DARK THEME */
+.chat-root.dark {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+/* Example for message bubbles */
+.chat-root.dark .message-bubble {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.chat-root.light .message-bubble {
+  background: #f2f2f2;
+  color: #000;
+}

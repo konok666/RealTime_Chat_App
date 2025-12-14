@@ -1,81 +1,121 @@
 .audio-recorder {
   width: 100%;
-  background: #fff;
-  padding: 15px;
+  background: #ffffff;
+  padding: 10px 12px;
   border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
   display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #ddd;
+}
+
+/* DELETE BUTTON (Trash) */
+.delete-btn {
+  background: #fbe9e9;
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 50%;
+  color: #d9534f;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-}
-
-.record-start {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  border-radius: 30px;
-  border: none;
-  background: #0dcaf0;
-  color: #fff;
-  font-size: 18px;
   cursor: pointer;
 }
 
-.record-start svg {
-  font-size: 22px;
+.delete-btn:hover {
+  background: #ffdede;
 }
 
-/* Recording UI */
-.recording-ui {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
+/* TIMER */
 .timer {
-  font-size: 18px;
-  font-weight: bold;
-  color: red;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 55px;
 }
 
-/* Wave animation */
-.wave {
-  width: 40px;
-  height: 20px;
-  background: repeating-linear-gradient(
-    to right,
-    #0dcaf0 0%,
-    #0dcaf0 20%,
-    transparent 20%,
-    transparent 40%
-  );
-  animation: waveMove 0.4s infinite linear;
-  border-radius: 6px;
+.red-dot {
+  width: 9px;
+  height: 9px;
+  background: red;
+  border-radius: 50%;
+  animation: blink 1s infinite;
 }
 
-@keyframes waveMove {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 40px 0;
-  }
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
 }
 
-.cancel-btn,
-.send-btn {
-  background: none;
+.time-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* WAVEFORM */
+.waveform {
+  flex: 1;
+  height: 30px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.wave-bar {
+  width: 3px;
+  background: #4a90e2;
+  border-radius: 2px;
+  animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.3); }
+}
+
+/* Pause Button */
+.pause-btn {
+  background: #f0f0f0;
   border: none;
-  font-size: 26px;
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
   cursor: pointer;
-  color: #444;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
 }
 
+.pause-btn:hover {
+  background: #e2e2e2;
+}
+
+/* Send Button */
 .send-btn {
-  color: #0dcaf0;
+  background: #4CAF50;
+  border: none;
+  padding: 11px 12px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.cancel-btn:hover {
-  color: red;
+.send-btn:hover {
+  background: #43a047;
+}
+
+/* Audio recorder popup wrapper */
+.audio-recorder-popup {
+  width: 100%;
+  padding: 8px 5px;
+  display: flex;
 }

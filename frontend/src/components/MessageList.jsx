@@ -5,6 +5,7 @@ import "../styles/MessageList.css";
 export default function MessageList({ messages, me, onReact, onEdit, onDelete, onPin }) {
   const ref = useRef();
 
+  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (ref.current) ref.current.scrollTop = ref.current.scrollHeight;
   }, [messages]);
@@ -16,31 +17,31 @@ export default function MessageList({ messages, me, onReact, onEdit, onDelete, o
       )}
 
       {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={`message-container ${msg.from === me ? "me" : "other"}`}
-        >
-          {/* Message bubble */}
+        <div key={msg.id} className={`message-container ${msg.from === me ? "me" : "other"}`}>
+          {/* Message Bubble */}
           <Message
             message={msg}
             meId={me}
-            onReact={(id, emoji) => onReact(id, emoji)}  // FIXED
+            onReact={onReact}
           />
 
-          {/* Action buttons */}
+          {/* Action Buttons */}
           <div className="message-actions">
-            <button onClick={() => onPin(msg)}>📌</button>
+            <button onClick={() => onPin(msg)} title="Pin message">📌</button>
 
             <button
               onClick={() => {
                 const newText = prompt("Edit message:", msg.text);
-                if (newText !== null) onEdit(msg.id, newText);
+                if (newText !== null && newText.trim() !== "") {
+                  onEdit(msg.id, newText);
+                }
               }}
+              title="Edit message"
             >
               ✏️
             </button>
 
-            <button onClick={() => onDelete(msg.id)}>🗑️</button>
+            <button onClick={() => onDelete(msg.id)} title="Delete message">🗑️</button>
           </div>
         </div>
       ))}
